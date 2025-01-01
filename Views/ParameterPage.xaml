@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:range="clr-namespace:SofyTrender.Scripts"
+             xmlns:custom="clr-namespace:SofyTrender.Custom"
+             xmlns:viewmodels="clr-namespace:SofyTrender.ViewModels"
+             xmlns:models="clr-namespace:SofyTrender.Models"
+             xmlns:spotifyWeb="clr-namespace:SpotifyAPI.Web;assembly=SpotifyAPI.Web"
+             x:Class="SofyTrender.Pages.ParameterPage"
+             x:DataType="viewmodels:ParameterViewModel"
+             Title="">
+
+    <ContentPage.Resources>
+        <custom:ValueToYearConverter x:Key="valueToYear" />
+    </ContentPage.Resources>
+    <StackLayout Margin="10,0">
+        <AbsoluteLayout HeightRequest="180" HorizontalOptions="FillAndExpand">
+            <Entry x:Name="nameEntry" 
+                   Text="{Binding Name}"
+                   ReturnCommand="{Binding NameChangedCommand}"
+                   AbsoluteLayout.LayoutFlags="All"
+                   AbsoluteLayout.LayoutBounds="0.5,0.1,0.5,0.2"/>
+
+            <Label  Text="Use preferrebly Tracks from the given Years. This does not work like a filter more like a preference."
+                    AbsoluteLayout.LayoutFlags="All"
+                    AbsoluteLayout.LayoutBounds="0.85,0.7,0.4,0.4"/>
+            <Switch IsToggled="{Binding UseYears}"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"
+                    AbsoluteLayout.LayoutBounds="1,0.5,50,50">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="On">
+                            <VisualState.Setters>
+                                <Setter Property="ThumbColor" Value="{StaticResource DefaultGreen}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Off">
+                            <VisualState.Setters>
+                                <Setter Property="ThumbColor" Value="{StaticResource DefaultRed}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Switch>
+            <Label AbsoluteLayout.LayoutFlags="PositionProportional"
+                   AbsoluteLayout.LayoutBounds="0.58,0.75,100,20">
+                <Label.Text>
+                    <MultiBinding Converter="{StaticResource valueToYear}">
+                        <Binding Source="{x:Reference dateSlider}" Path="MinValue" />
+                        <Binding Source="{x:Reference dateSlider}" Path="MaxValue" />
+                    </MultiBinding>
+                </Label.Text>
+            </Label>
+
+            <range:RangeSlider x:Name="dateSlider"
+                               MinValue="{Binding MinYear}"
+                               MaxValue="{Binding MaxYear}"
+                               AbsoluteLayout.LayoutFlags="All"
+                               AbsoluteLayout.LayoutBounds="0.95,0.9,0.46,0.1">
+            </range:RangeSlider>
+
+            <Label  Text="Prefer Tracks with the given Popularity. Leftmost means more unknown songs, where rightmost means more popular songs."
+                    AbsoluteLayout.LayoutFlags="All"
+                    AbsoluteLayout.LayoutBounds="0.01,0.7,0.4,0.4"/>
+            
+            <Switch IsToggled="{Binding UsePopularity}"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"
+                    AbsoluteLayout.LayoutBounds="0.45,0.5,50,50">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="On">
+                            <VisualState.Setters>
+                                <Setter Property="ThumbColor" Value="{StaticResource DefaultGreen}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Off">
+                            <VisualState.Setters>
+                                <Setter Property="ThumbColor" Value="{StaticResource DefaultRed}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Switch>
+
+            <Slider x:Name="PopularitySlider"
+                    Value="{Binding Popularity}" 
+                    AbsoluteLayout.LayoutFlags="All"
+                    AbsoluteLayout.LayoutBounds="0,0.9,0.48,0.15"
+                    DragCompletedCommand="{Binding PopularityChangedCommand}"/>
+        </AbsoluteLayout>
+
+        <ScrollView VerticalOptions="FillAndExpand">
+            <ScrollView.Content>
+                <StackLayout Margin="0,0,0,10">
+
+                    <!-- Playlists -->
+                    <AbsoluteLayout>
+                        <Label Text="Playlists" Style="{StaticResource ListHeader}"/>
+                    </AbsoluteLayout>
+                    <CollectionView x:Name="playlistsList"
+                        VerticalOptions="FillAndExpand"
+                        ItemsSource="{Binding GeneratedPlaylists}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="2"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="spotifyWeb:FullPlaylist">
+                                <Frame Style="{StaticResource ListEntry}">
+                                    <Grid ColumnSpacing="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="{Binding Name}" TextColor="LightGray"></Label>
+                                        <ImageButton Grid.Column="1"
+                                            Style="{StaticResource RefreshButton}"
+                                            Command="{Binding Path=RegenerateCommand, Source={RelativeSource AncestorType={x:Type viewmodels:ParameterViewModel}}}"
+                                            CommandParameter="{Binding .}"/>
+                                        <ImageButton Grid.Column="2"
+                                            Style="{StaticResource DeleteButton}"
+                                            Command="{Binding Path=RemovePlaylistCommand, Source={RelativeSource AncestorType={x:Type viewmodels:ParameterViewModel}}}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Frame Style="{StaticResource AddEntry}">
+                        <AbsoluteLayout>
+                            <ImageButton Style="{StaticResource AddButton}" Command="{Binding GenerateNewCommand}"/>
+                        </AbsoluteLayout>
+                    </Frame>
+                    <BoxView Style="{StaticResource ListSpacer}"/>
+
+                    <!-- Genres-->
+                    <AbsoluteLayout>
+                        <Label Text="Genres" Style="{StaticResource ListHeader}"/>
+                    </AbsoluteLayout>
+                    <CollectionView x:Name="genreList"
+                        VerticalOptions="FillAndExpand"
+                        ItemsSource="{Binding Genres}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="2"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Frame Style="{StaticResource ListEntry}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="{Binding .}" TextColor="LightGray"></Label>
+                                        <ImageButton Grid.Column="1"
+                                            Style="{StaticResource DeleteButton}"
+                                            Command="{Binding Path=RemoveGenreCommand, Source={RelativeSource AncestorType={x:Type viewmodels:ParameterViewModel}}}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Frame Style="{StaticResource AddEntry}">
+                        <AbsoluteLayout>
+                            <ImageButton Style="{StaticResource AddButton}" Command="{Binding AddGenreCommand}"/>
+                        </AbsoluteLayout>
+                    </Frame>
+                    <BoxView Style="{StaticResource ListSpacer}"/>
+
+                    <!-- Artists -->
+                    <AbsoluteLayout>
+                        <Label Text="Artists" Style="{StaticResource ListHeader}"/>
+                    </AbsoluteLayout>
+                    <CollectionView x:Name="artistsList"
+                        VerticalOptions="FillAndExpand"
+                        ItemsSource="{Binding Artists}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="2"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="spotifyWeb:FullArtist">
+                                <Frame Style="{StaticResource ListEntry}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="{Binding Name}" TextColor="LightGray"></Label>
+                                        <ImageButton Grid.Column="1"
+                                            Style="{StaticResource DeleteButton}"
+                                            Command="{Binding Path=RemoveArtistCommand, Source={RelativeSource AncestorType={x:Type viewmodels:ParameterViewModel}}}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Frame Style="{StaticResource AddEntry}">
+                        <AbsoluteLayout>
+                            <ImageButton Style="{StaticResource AddButton}" Command="{Binding AddArtistCommand}"/>
+                        </AbsoluteLayout>
+                    </Frame>
+                    <BoxView Style="{StaticResource ListSpacer}"/>
+
+                    <!-- Tracks -->
+                    <AbsoluteLayout>
+                        <Label Text="Tracks" Style="{StaticResource ListHeader}"/>
+                    </AbsoluteLayout>
+                    <CollectionView x:Name="tracksList"
+                        VerticalOptions="FillAndExpand"
+                        ItemsSource="{Binding Tracks}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="2"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="spotifyWeb:FullTrack">
+                                <Frame Style="{StaticResource ListEntry}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="{Binding Name}" TextColor="LightGray"></Label>
+                                        <Label Grid.Column="1" Text="{Binding Artists[0].Name}" TextColor="LightGray"></Label>
+                                        <ImageButton Grid.Column="2"
+                                            Style="{StaticResource DeleteButton}"
+                                            Command="{Binding Path=RemoveTrackCommand, Source={RelativeSource AncestorType={x:Type viewmodels:ParameterViewModel}}}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Frame Style="{StaticResource AddEntry}">
+                        <AbsoluteLayout>
+                            <ImageButton Style="{StaticResource AddButton}" Command="{Binding AddTrackCommand}"/>
+                        </AbsoluteLayout>
+                    </Frame>
+                </StackLayout>
+            </ScrollView.Content>
+        </ScrollView>
+    </StackLayout>
+</ContentPage>

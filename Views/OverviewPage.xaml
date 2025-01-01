@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:SofyTrender.ViewModels"
+             xmlns:models="clr-namespace:SofyTrender.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="SofyTrender.Views.OverviewPage"
+             x:DataType="viewmodel:OverviewViewModel"
+             Title="">
+    <ContentPage.BindingContext>
+        <viewmodel:OverviewViewModel/>
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout x:Name="layout" Margin="10,0">
+        <AbsoluteLayout HorizontalOptions="Start" HeightRequest="45">
+            <Label Text="Playlists" 
+                           Style="{StaticResource ListHeader}"/>
+        </AbsoluteLayout>
+        <ScrollView VerticalOptions="FillAndExpand">
+            <ScrollView.Content>
+                <VerticalStackLayout>
+                    <CollectionView x:Name="playlistsList"
+                            SelectionChangedCommand="{Binding SelectPlaylistCommand}"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedItem}"
+                            ItemsSource="{Binding Playlists}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="2"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:PlaylistSaveData">
+                                <Frame Style="{StaticResource ListEntry}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="{Binding name}" FontSize="20" TextColor="{StaticResource DefaultWhite}"></Label>
+                                        <ImageButton Grid.Column="1" 
+                                            Style="{StaticResource DeleteButton}"
+                                            Command="{Binding Path=RemovePlaylistCommand, Source={RelativeSource AncestorType={x:Type viewmodel:OverviewViewModel}}}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Frame Style="{StaticResource AddEntry}">
+                        <AbsoluteLayout>
+                            <ImageButton Style="{StaticResource AddButton}"
+                                     Command="{Binding AddPlaylistCommand}"/>
+                        </AbsoluteLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </ScrollView.Content>
+        </ScrollView>
+    </StackLayout>
+</ContentPage>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:SofyTrender.ViewModels"
+             x:Class="SofyTrender.Views.LoginPage"
+             x:DataType="viewmodel:LoginViewModel">
+    <AbsoluteLayout>
+        <Label Text="SofyTrender" 
+               TextColor="{StaticResource DefaultWhite}" 
+               FontSize="100"
+               AbsoluteLayout.LayoutBounds="0.5,0.1"
+               AbsoluteLayout.LayoutFlags="PositionProportional"/>
+        <Label Text="create your own playlists" 
+               TextColor="{StaticResource DefaultWhite}" 
+               FontSize="25"
+               AbsoluteLayout.LayoutBounds="0.5,0.38"
+               AbsoluteLayout.LayoutFlags="PositionProportional"/>
+        <Button x:Name="LoginBtn"
+                Style="{StaticResource GreenColors}"
+                Text="Login" 
+                Command="{Binding LoginCommand}"
+                HorizontalOptions="Fill"
+                VerticalOptions="End"
+                AbsoluteLayout.LayoutBounds="0.5,0.8,200, 50"
+                AbsoluteLayout.LayoutFlags="PositionProportional">
+        </Button>
+        <Button x:Name="CredentialsButton"
+                Style="{StaticResource GreenColors}"
+                Text="Add Credentials" 
+                Command="{Binding AddCredentialsCommand}"
+                HorizontalOptions="Fill"
+                VerticalOptions="End"
+                AbsoluteLayout.LayoutBounds="0.5,0.7,200, 50"
+                AbsoluteLayout.LayoutFlags="PositionProportional">
+        </Button>
+    </AbsoluteLayout>
+</ContentPage>

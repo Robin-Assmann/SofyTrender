@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls">
+
+    <!-- Spotify Colors-->
+    <Color x:Key="DefaultGreen">#1DB954</Color>
+    <Color x:Key="DarkGrey">#212121</Color>
+    <Color x:Key="DefaultBlack">#121212</Color>
+    <Color x:Key="DefaultGrey">#535353</Color>
+    <Color x:Key="LightGrey">#B3B3B3</Color>
+    <Color x:Key="DefaultWhite">#EBEBEB</Color>
+    <Color x:Key="DefaultRed">#9b3535</Color>
+
+    <Style TargetType="ImageButton" x:Key="DeleteButton">
+        <Setter Property="BackgroundColor" Value="{StaticResource DefaultRed}"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Source" Value="delete.png"/>
+        <Setter Property="WidthRequest" Value="50"/>
+        <Setter Property="HeightRequest" Value="50"/> 
+    </Style>
+
+    <Style TargetType="ImageButton" x:Key="RefreshButton" BasedOn="{StaticResource DeleteButton}">
+        <Setter Property="BackgroundColor" Value="{StaticResource DefaultGreen}"/>
+        <Setter Property="Source" Value="refresh.png"/>
+    </Style>
+
+    <Style TargetType="ImageButton" x:Key="AddButton">
+        <Setter Property="BackgroundColor" Value="Transparent"/>
+        <Setter Property="BorderColor" Value="Transparent"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Source" Value="plus.png"/>
+        <Setter Property="WidthRequest" Value="10000"/>
+        <Setter Property="HeightRequest" Value="50"/>
+        <Setter Property="AbsoluteLayout.LayoutBounds" Value="0.5,0.5"/>
+        <Setter Property="AbsoluteLayout.LayoutFlags" Value="PositionProportional"/>
+    </Style>
+
+    <Style TargetType="Frame" x:Key="ListEntry">
+        <Setter Property="CornerRadius" Value="30"/>
+        <Setter Property="BackgroundColor" Value="{StaticResource DefaultGrey}"/>
+        <Setter Property="HeightRequest" Value="70"/>
+    </Style>
+
+    <Style TargetType="Frame" x:Key="AddEntry" BasedOn="{StaticResource ListEntry}">
+        <Setter Property="Margin" Value="0,2,0,0"/>
+    </Style>
+
+    <Style TargetType="Label" x:Key="ListHeader">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="TextColor" Value="{StaticResource DefaultWhite}"/>
+        <Setter Property="AbsoluteLayout.LayoutBounds" Value="10,0,300,30"/>
+    </Style>
+
+    <Style TargetType="BoxView" x:Key="ListSpacer">
+        <Setter Property="HeightRequest" Value="30"/>
+    </Style>
+
+    <Style TargetType="Button" x:Key="GreenColors">
+        <Setter Property="TextColor" Value="{StaticResource DefaultBlack}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource DefaultGreen}" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="TextColor" Value="{StaticResource DefaultWhite}" />
+                            <Setter Property="BackgroundColor" Value="{StaticResource DarkGrey}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="PointerOver" />
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="DefaultTemplate">
+        <Grid RowDefinitions="25, *, 50">
+            <BoxView Color="{StaticResource DefaultGreen}" />
+            <Label Margin="20,0,0,0" Text="{TemplateBinding HeaderText}"/>
+            <ContentPresenter Grid.Row="1" />
+            <BoxView Grid.Row="2"
+                 Color="{StaticResource DefaultGreen}" />
+            <Label x:Name="changeThemeLabel"
+               Grid.Row="2"
+               Margin="20,0,0,0"
+               Text="Change Theme">
+            </Label>
+        </Grid>
+    </ControlTemplate>
+</ResourceDictionary>

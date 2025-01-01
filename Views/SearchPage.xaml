@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:selector="clr-namespace:SofyTrender.Pages"
+             x:Class="SofyTrender.Pages.SearchPage"
+             Title="">
+    <ContentPage.Resources>
+        <DataTemplate x:Key="GenreTemplate">
+            <Frame Style="{StaticResource ListEntry}">
+                <Label Text="{Binding .}" TextColor="{StaticResource DefaultWhite}"></Label>
+            </Frame>
+        </DataTemplate>
+        <DataTemplate x:Key="ArtistTemplate">
+            <Frame Style="{StaticResource ListEntry}">
+                <Label Text="{Binding Name}" TextColor="{StaticResource DefaultWhite}"></Label>
+            </Frame>
+        </DataTemplate>
+        <DataTemplate x:Key="TrackTemplate">
+            <Frame Style="{StaticResource ListEntry}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Text="{Binding Name}" TextColor="{StaticResource DefaultWhite}"></Label>
+                    <CollectionView x:Name="artistList"
+                          HorizontalScrollBarVisibility="Always"
+                          ItemsSource="{Binding Artists}"
+                          ItemsLayout="HorizontalList"
+                          Grid.Column="1">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Label Text="{Binding Name}" TextColor="GreenYellow"></Label>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Frame>
+        </DataTemplate>
+        <selector:SearchDataTemplateSelector x:Key="TemplateSelector" ArtistTemplate="{StaticResource ArtistTemplate}" GenreTemplate="{StaticResource GenreTemplate}" TrackTemplate="{StaticResource TrackTemplate}"/>
+    </ContentPage.Resources>
+
+    <Grid x:Name="layout" Margin="10,0" RowSpacing="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <SearchBar SearchCommand="{Binding SearchCommand}"
+                   SearchCommandParameter="{Binding Source={RelativeSource Self}, Path=Text}"
+                   Placeholder="Search"
+                   Grid.Row="0">
+        </SearchBar>
+        <CollectionView x:Name="genreList"
+                  SelectionChangedCommand="{Binding SelectCommand}"
+                  SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
+                  SelectionMode="Single"
+                  VerticalScrollBarVisibility="Always"
+                  ItemsSource="{Binding SearchModel.Items}"
+                  ItemTemplate="{StaticResource TemplateSelector}"
+                  Grid.Row="1">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="2"/>
+            </CollectionView.ItemsLayout>
+        </CollectionView>
+    </Grid>
+</ContentPage>
