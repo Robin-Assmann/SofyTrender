@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SofyTrender.Models;
@@ -15,7 +14,7 @@ namespace SofyTrender.ViewModels
         public ISearchModel<T> SearchModel { get; private set; }
         public ObservableCollection<T> Items => SearchModel.Items;
 
-        public event Action<object> ItemSelected;
+        public event Action<object>? ItemSelected;
 
         public SearchViewModel(ISearchModel<T> searchModel)
         {
@@ -37,7 +36,6 @@ namespace SofyTrender.ViewModels
 
         void Select(object selectedItem)
         {
-            Debug.WriteLine("Selected Item: " + selectedItem);
             ItemSelected?.Invoke(selectedItem);
         }
     }

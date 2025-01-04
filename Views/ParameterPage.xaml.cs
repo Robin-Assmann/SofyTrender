@@ -7,7 +7,6 @@ namespace SofyTrender.Pages
         public ParameterPage(ParameterViewModel viewmodel)
         {
             InitializeComponent();
-
             BindingContext = viewmodel;
         }
     }

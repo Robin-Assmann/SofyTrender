@@ -9,7 +9,7 @@ namespace SofyTrender.Services
         const string PlaylistFileName = "playlists.json";
         const string CredentialsFileName = "credentials.json";
 
-        public static async Task<CredentialsData> LoadCredentials()
+        public static async Task<CredentialsData?> LoadCredentials()
         {
             var result = await DoLoad<CredentialsData>(CredentialsFileName);
             return result;
@@ -23,7 +23,7 @@ namespace SofyTrender.Services
         public static async Task<PlaylistSaveData[]> LoadPlaylists()
         {
             var result = await DoLoad<PlaylistSaveData[]>(PlaylistFileName);
-            return result;
+            return result ?? [];
         }
 
         public static void SavePlaylists(PlaylistSaveData[] data)
@@ -31,27 +31,27 @@ namespace SofyTrender.Services
             DoSave(data, PlaylistFileName);
         }
 
-        static async Task<T> DoLoad<T>(string fileName)
+        static async Task<T?> DoLoad<T>(string fileName)
         {
-            T rv = default;
+            T? returnValue = default;
             try
             {
                 string path = Path.Combine(FileSystem.AppDataDirectory, fileName);
                 if (!File.Exists(path))
                 {
-                    return rv;
+                    return returnValue;
                 }
-                using (StreamReader sr = File.OpenText(path))
-                {
-                    var text = await sr.ReadToEndAsync();
-                    rv = JsonConvert.DeserializeObject<T>(text);
-                    return rv;
-                }
+
+                using StreamReader streamReader = File.OpenText(path);
+
+                var text = await streamReader.ReadToEndAsync();
+                returnValue = JsonConvert.DeserializeObject<T>(text);
+                return returnValue;
             } catch (FileNotFoundException ex)
             {
                 Debug.WriteLine($"{ex.Message}");
             }
-            return rv;
+            return returnValue;
         }
 
         static void DoSave(Object data, string fileName)
@@ -59,7 +59,7 @@ namespace SofyTrender.Services
             try
             {
                 string path = Path.Combine(FileSystem.AppDataDirectory, fileName);
-                using (StreamWriter sw = new StreamWriter(path))
+                using (StreamWriter sw = new(path))
                 {
                     sw.WriteLine(JsonConvert.SerializeObject(data));
                 }

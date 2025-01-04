@@ -27,10 +27,10 @@ namespace SofyTrender.ViewModels
         public ICommand PopularityChangedCommand { get; set; }
         public ICommand NameChangedCommand { get; set; }
 
-        public ObservableCollection<string> Genres { get; set; } = new ObservableCollection<string>();
-        public ObservableCollection<FullArtist> Artists { get; set; } = new ObservableCollection<FullArtist> { };
-        public ObservableCollection<FullTrack> Tracks { get; set; } = new ObservableCollection<FullTrack> { };
-        public ObservableCollection<FullPlaylist> GeneratedPlaylists { get; set; } = new ObservableCollection<FullPlaylist> { };
+        public ObservableCollection<string> Genres { get; set; } = [];
+        public ObservableCollection<FullArtist> Artists { get; set; } = [];
+        public ObservableCollection<FullTrack> Tracks { get; set; } = [];
+        public ObservableCollection<FullPlaylist> GeneratedPlaylists { get; set; } = [];
 
         [ObservableProperty] string name;
         [ObservableProperty] int seedCount;
@@ -60,9 +60,9 @@ namespace SofyTrender.ViewModels
 
             _playListData = playlist;
             Name = _playListData.name;
-            var values = Utils.ConvertFromYears(_playListData.minYear, _playListData.maxYear);
-            MinYear = values.min;
-            MaxYear = values.max;
+            var (min, max) = Utils.ConvertFromYears(_playListData.minYear, _playListData.maxYear);
+            MinYear = min;
+            MaxYear = max;
             UseYears = _playListData.useYears;
             UsePopularity = _playListData.usePopularity;
             Popularity = _playListData.popularity / 100d;
@@ -120,8 +120,8 @@ namespace SofyTrender.ViewModels
             var recommendationsRequest = UseYears ? await GetRecommendationsByYears() : GetSimpleRecommendations();
             if (UsePopularity) recommendationsRequest.Target.Add("popularity", "" + (int)(Popularity * 100));
 
-            var response = await SpotifyService.SpotifyClient.Browse.GetRecommendations(recommendationsRequest);
-            if (response.Tracks.Count == 0)
+            var response = await SpotifyService.SpotifyClient?.Browse.GetRecommendations(recommendationsRequest) ?? null;
+            if (response != null && response.Tracks.Count == 0)
             {
                 Application.Current?.MainPage.DisplayAlert("Error", $"Something went wrong, we could not generate enough Tracks", "sad...");
                 return;

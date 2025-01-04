@@ -62,7 +62,7 @@
             <Label  Text="Prefer Tracks with the given Popularity. Leftmost means more unknown songs, where rightmost means more popular songs."
                     AbsoluteLayout.LayoutFlags="All"
                     AbsoluteLayout.LayoutBounds="0.01,0.7,0.4,0.4"/>
-            
+
             <Switch IsToggled="{Binding UsePopularity}"
                     AbsoluteLayout.LayoutFlags="PositionProportional"
                     AbsoluteLayout.LayoutBounds="0.45,0.5,50,50">

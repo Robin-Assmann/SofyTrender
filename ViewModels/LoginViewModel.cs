@@ -16,8 +16,8 @@ namespace SofyTrender.ViewModels
 
         public LoginViewModel()
         {
-            LoginCommand = new Command(Login, ()=> IsInitialized);
-            AddCredentialsCommand = new Command(AddCredentials, ()=> !IsInitialized);
+            LoginCommand = new Command(Login, () => IsInitialized);
+            AddCredentialsCommand = new Command(AddCredentials, () => !IsInitialized);
 
             SpotifyService.LoginStatusChanged += OnLoginStatusChanged;
             SpotifyService.InitChanged += OnInitChanged;
@@ -26,14 +26,10 @@ namespace SofyTrender.ViewModels
             LoadCredentials();
         }
 
-        async void LoadCredentials()
+        static async void LoadCredentials()
         {
             var result = await DataStoreService.LoadCredentials();
-
-            if (result == null)
-            {
-                return;
-            }
+            if (result == null) return;
 
             SpotifyService.Init(result);
         }
@@ -47,10 +43,9 @@ namespace SofyTrender.ViewModels
         {
             var credentials = await ShowCredentialsPicker();
 
-            if (credentials == null) {
-
-                Application.Current?.MainPage.DisplayAlert("Playlist", $" Could not read the selected File! ", "Ok");
-
+            if (credentials == null)
+            {
+                Application.Current?.MainPage?.DisplayAlert("Playlist", $" Could not read the selected File! ", "Ok");
                 return;
             }
 
@@ -58,9 +53,9 @@ namespace SofyTrender.ViewModels
             DataStoreService.SaveCredentials(credentials);
         }
 
-        async Task<CredentialsData> ShowCredentialsPicker()
+        async Task<CredentialsData?> ShowCredentialsPicker()
         {
-            CredentialsData rv = default;
+            CredentialsData? returnValue = default;
             try
             {
                 var options = PickOptions.Default;
@@ -75,19 +70,19 @@ namespace SofyTrender.ViewModels
                         using (var sr = new StreamReader(stream))
                         {
                             var text = await sr.ReadToEndAsync();
-                            rv = JsonConvert.DeserializeObject<CredentialsData>(text);
-                            return rv;
+                            returnValue = JsonConvert.DeserializeObject<CredentialsData>(text);
+                            return returnValue;
                         }
                     }
                 }
 
-                return rv;
-            } catch (Exception ex)
+                return returnValue;
+            } catch (Exception)
             {
-                Application.Current?.MainPage.DisplayAlert("Playlist", $" Could not deserialize the selected File! ", "Ok");
+                Application.Current?.MainPage?.DisplayAlert("Playlist", $" Could not deserialize the selected File! ", "Ok");
             }
 
-            return rv;
+            return returnValue;
         }
 
         void OnLoginStatusChanged(bool isLoggedIn)

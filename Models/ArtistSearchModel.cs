@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SofyTrender.Services;
 using SpotifyAPI.Web;
 
@@ -12,11 +7,7 @@ namespace SofyTrender.Models
 {
     internal class ArtistSearchModel : ISearchModel<FullArtist>
     {
-        public ObservableCollection<FullArtist> Items { get; } = new ObservableCollection<FullArtist>();
-
-        public ArtistSearchModel()
-        {
-        }
+        public ObservableCollection<FullArtist> Items { get; } = [];
 
         public void Search(string input)
         {
@@ -27,10 +18,10 @@ namespace SofyTrender.Models
             {
                 Items.Clear();
                 var searchRequest = new SearchRequest(SearchRequest.Types.Artist, input);
-                var search = await SpotifyService.SpotifyClient.Search.Item(searchRequest);
-                if (search.Artists.Items != null)
+                var searchResponse = await SpotifyService.SpotifyClient?.Search.Item(searchRequest) ?? null;
+                if (searchResponse != null && searchResponse.Artists.Items != null)
                 {
-                    foreach (var artist in search.Artists.Items)
+                    foreach (var artist in searchResponse.Artists.Items)
                     {
                         Items.Add(artist);
                     }
@@ -40,7 +31,7 @@ namespace SofyTrender.Models
 
         public void TextChange(string input)
         {
-            Debug.WriteLine("ArtistSearchModel:TextChange " + input);
+            //noop
         }
     }
 }

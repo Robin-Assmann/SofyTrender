@@ -5,9 +5,9 @@ namespace SofyTrender.Models
 {
     internal class GenreSearchModel : ISearchModel<string>
     {
-        public ObservableCollection<string> Items { get; } = new ObservableCollection<string>();
+        public ObservableCollection<string> Items { get; } = [];
 
-        List<string> _genres;
+        readonly List<string> _genres = [];
 
         public GenreSearchModel()
         {
@@ -16,7 +16,6 @@ namespace SofyTrender.Models
 
         public void Search(string input)
         {
-            Debug.WriteLine("GenreSearchModel:Search " + input);
             Items.Clear();
             foreach (var genre in _genres.Where(g => g.Contains(input, StringComparison.CurrentCultureIgnoreCase)))
             {
@@ -26,9 +25,7 @@ namespace SofyTrender.Models
 
         public void TextChange(string input)
         {
-            Debug.WriteLine("GenreSearchModel:TextChange " + input);
             Items.Clear();
-            Debug.WriteLine("GenreSearchModel:_genres " + _genres.Count);
             foreach (var genre in _genres.Where(g => g.Contains(input, StringComparison.CurrentCultureIgnoreCase)))
             {
                 Items.Add(genre);
@@ -39,8 +36,9 @@ namespace SofyTrender.Models
         {
             Task<List<string>> task = ReadLines("Genres.txt");
             await task;
-            _genres = task.Result;
-            Debug.WriteLine("After Read: " + _genres.Count);
+
+            _genres.Clear();
+            _genres.AddRange(task.Result);
             foreach (var genre in _genres)
             {
                 Items.Add(genre);
@@ -54,19 +52,18 @@ namespace SofyTrender.Models
             {
                 // Open the source file
                 using Stream fileStream = await FileSystem.Current.OpenAppPackageFileAsync(DataFile);
-                using StreamReader sr = new(fileStream);
+                using StreamReader streamReader = new(fileStream);
 
-                string line;
+                string? line;
 
-                while ((line = sr.ReadLine()) != null)
+                while ((line = streamReader.ReadLine()) != null)
                 {
                     rv.Add(line);
                 }
-                sr.Close();
+                streamReader.Close();
                 fileStream.Close();
                 return rv;
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
             }

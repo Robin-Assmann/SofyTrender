@@ -22,10 +22,10 @@ namespace SofyTrender.Models
             {
                 Items.Clear();
                 var searchRequest = new SearchRequest(SearchRequest.Types.Track, input);
-                var search = await SpotifyService.SpotifyClient.Search.Item(searchRequest);
-                if (search.Tracks.Items != null)
+                var searchResponse = await SpotifyService.SpotifyClient?.Search.Item(searchRequest) ?? null;
+                if (searchResponse != null && searchResponse.Tracks.Items != null)
                 {
-                    foreach (var track in search.Tracks.Items)
+                    foreach (var track in searchResponse.Tracks.Items)
                     {
                         Items.Add(track);
                     }
@@ -35,7 +35,7 @@ namespace SofyTrender.Models
 
         public void TextChange(string input)
         {
-            Debug.WriteLine("ArtistSearchModel:TextChange " + input);
+            //noop
         }
     }
 }

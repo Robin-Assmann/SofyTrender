@@ -30,7 +30,7 @@ namespace SofyTrender
                 });
 
 #if WINDOWS
-            Microsoft.Maui.Handlers.SwitchHandler.Mapper.AppendToMapping("NoLabel", (handler, view) => {
+            SwitchHandler.Mapper.AppendToMapping("NoLabel", (handler, view) => {
                 // Remove this if statement if you want to apply this to all switches
                 if (view is Switch)
                 {

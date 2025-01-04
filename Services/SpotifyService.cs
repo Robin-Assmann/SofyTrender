@@ -1,18 +1,17 @@
-﻿using System.Net;
-using SofyTrender.Models;
+﻿using SofyTrender.Models;
 using SpotifyAPI.Web;
 
 namespace SofyTrender.Services
 {
     public static class SpotifyService
     {
-        public static event Action<bool> LoginStatusChanged;
-        public static event Action InitChanged;
+        public static event Action<bool>? LoginStatusChanged;
+        public static event Action? InitChanged;
 
         public static SpotifyClient? SpotifyClient { get; private set; }
         public static bool IsInitialized => _credentials != null;
 
-        static CredentialsData _credentials;
+        static CredentialsData? _credentials;
 
         public static void Init(CredentialsData data)
         {
@@ -26,6 +25,8 @@ namespace SofyTrender.Services
 
         public static async void Login()
         {
+            if (_credentials == null) return;
+
 #if WINDOWS
             var (verifier, challenge) = PKCEUtil.GenerateCodes();
 
@@ -41,16 +42,15 @@ namespace SofyTrender.Services
             };
             var uri = loginRequest.ToUri();
 
-            var wr = new WebAuthenticatorOptions();
-            wr.Url = uri;
-            wr.CallbackUrl = new Uri(_credentials.callbackAddress);
-            wr.PrefersEphemeralWebBrowserSession = true;
+            var authOptions = new WebAuthenticatorOptions();
+            authOptions.Url = uri;
+            authOptions.CallbackUrl = new Uri(_credentials.callbackAddress);
+            authOptions.PrefersEphemeralWebBrowserSession = true;
 
             var response = await Scripts.WinUIEx.WebAuthenticator.AuthenticateAsync(uri, new Uri(_credentials.callbackAddress));
 
             SpotifyClient = new SpotifyClient(response.AccessToken);
             LoginStatusChanged?.Invoke(true);
-
 #endif
         }
 

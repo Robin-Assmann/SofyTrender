@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Maui.Controls;
 using SofyTrender.Custom;
 using SofyTrender.Models;
 using SofyTrender.Pages;
@@ -14,15 +13,14 @@ namespace SofyTrender.ViewModels
     {
         public event Action<PlaylistSaveData>? PlaylistSelected;
 
-        public string HeaderText { get; set; } = "Overview";
-
         public ICommand SelectPlaylistCommand { get; set; }
         public ICommand AddPlaylistCommand { get; set; }
         public ICommand RemovePlaylistCommand { get; set; }
 
-        public ObservableCollection<PlaylistSaveData> Playlists { get; private set; } = new ObservableCollection<PlaylistSaveData>();
+        public string HeaderText { get; set; } = "Overview";
+        public ObservableCollection<PlaylistSaveData> Playlists { get; private set; } = [];
 
-        [ObservableProperty] object _selectedItem;
+        [ObservableProperty] object? _selectedItem;
 
         public OverviewViewModel()
         {
@@ -36,13 +34,9 @@ namespace SofyTrender.ViewModels
         async void LoadPlaylists()
         {
             var result = await DataStoreService.LoadPlaylists();
+            if (result == null) return;
 
-            if (result == null)
-            {
-                return;
-            }
-
-            foreach(var playlist in result)
+            foreach (var playlist in result)
             {
                 Playlists.Add(playlist);
             }
@@ -56,35 +50,34 @@ namespace SofyTrender.ViewModels
 
         void RemovePlaylist(object playlistData)
         {
-            if (!playlistData.IsOfType<PlaylistSaveData>(out var convPlaylist)) return;
+            if (!playlistData.IsOfType<PlaylistSaveData>(out var convertedPlaylist) || convertedPlaylist == null) return;
 
-            Playlists.Remove(convPlaylist);
+            Playlists.Remove(convertedPlaylist);
             SavePlaylists();
         }
 
         public void SavePlaylists()
         {
-            Debug.WriteLine("RRRR saved now!");
             foreach (var pl in Playlists)
             {
                 Debug.WriteLine("Found playlist: " + pl.name + " Genres: " + pl.genres.Length + " Artists:" + pl.artists.Length + " Tracks:" + pl.tracks.Length);
             }
 
-            DataStoreService.SavePlaylists(Playlists.ToArray());
+            DataStoreService.SavePlaylists([.. Playlists]);
         }
 
         void SelectPlaylist()
         {
             var playlist = SelectedItem;
-            if (!playlist.IsOfType<PlaylistSaveData>(out var convPlaylist)) return;
+            if (playlist == null || !playlist.IsOfType<PlaylistSaveData>(out var convertedPlaylist) || convertedPlaylist == null) return;
 
-            var parameterViewModel = new ParameterViewModel(convPlaylist);
+            var parameterViewModel = new ParameterViewModel(convertedPlaylist);
             parameterViewModel.PlaylistChanged += OnPlaylistChanged;
             Application.Current?.MainPage?.Navigation.PushAsync(new ParameterPage(parameterViewModel));
         }
 
         void OnPlaylistChanged()
-        {    
+        {
             SavePlaylists();
         }
     }

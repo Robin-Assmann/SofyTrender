@@ -7,7 +7,6 @@ public partial class OverviewPage : ContentPage
     public OverviewPage()
     {
         InitializeComponent();
-
         BindingContext = new OverviewViewModel();
     }
 
